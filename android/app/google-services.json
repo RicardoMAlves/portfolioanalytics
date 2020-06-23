@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "152234747411",
+    "firebase_url": "https://portfolioanalytics-28f75.firebaseio.com",
+    "project_id": "portfolioanalytics-28f75",
+    "storage_bucket": "portfolioanalytics-28f75.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:152234747411:android:62c2b07cc6830a7f4d01e6",
+        "android_client_info": {
+          "package_name": "ralves.com.br.portfolioanalytics"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "152234747411-g5tppimm7j3ke0n1p04ko97rijcr2ndv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7_-SPa0v4k6oN-fmG8hFqoW531VgspEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "152234747411-g5tppimm7j3ke0n1p04ko97rijcr2ndv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
