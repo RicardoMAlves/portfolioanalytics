@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRangePicker;
 import 'package:portfolioanalytics/utils/utildate.dart';
+import 'package:portfolioanalytics/models/accountowner.dart';
+import 'package:portfolioanalytics/widgets/buildprofitability.dart';
 
 class DailyCashKpis extends StatefulWidget {
   @override
@@ -8,19 +11,24 @@ class DailyCashKpis extends StatefulWidget {
 }
 
 class _DailyCashKpisState extends State<DailyCashKpis> {
+
+  AccountOwner accountOwner;
+
   DateTime _dateTime = DateTime.now();
   int _firstMonthDay = 1;
-  String dropdownValue = "Portfolios";
+  String _portfolioSelected = "Todos os FIDCs";
+  // ignore: unused_field
+  String _text;
 
-  List<DateTime> picked = new List<DateTime>();
+  List<DateTime> _picked = new List<DateTime>();
 
   UtilDate _utilDate = new UtilDate();
 
   void _setDateRangeSelected() {
     setState(() {
-      if (picked != null && picked.length == 2) {
-        _firstMonthDay = picked[0].day;
-        _dateTime = picked[1];
+      if (_picked != null && _picked.length == 2) {
+        _firstMonthDay = _picked[0].day;
+        _dateTime = _picked[1];
       }
     });
   }
@@ -50,9 +58,12 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
           children: [
             Divider(),
             _buildDateRangeAnalysed(context),
+            Divider(),
+            BuildProfitability(),
           ],
         ),
       ),
+      endDrawer: _buildPortfolioDrawer(),
     );
   }
 
@@ -64,7 +75,7 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
             color: Colors.grey[100],
             child: Container(
               width: 600.0,
-              height: 100.0,
+              height: 70.0,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -74,10 +85,10 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                       IconButton(
                         icon: Icon(
                           Icons.date_range,
-                          size: 50.0,
+                          size: 55.0,
                         ),
                         onPressed: () async {
-                          picked = await DateRangePicker.showDatePicker(
+                          _picked = await DateRangePicker.showDatePicker(
                               context: context,
                               initialFirstDate: new DateTime.now(),
                               initialLastDate: (new DateTime.now())
@@ -97,6 +108,11 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                     children: [
                       Row(
                         children: [
+                          Text("")
+                        ],
+                      ),
+                      Row(
+                        children: [
                           Text(
                             "Período: ${_firstMonthDay.toString()} à ${_dateTime.day.toString()}/${_utilDate.monthReduceExtension(_dateTime.month - 1)}",
                             style: TextStyle(
@@ -109,28 +125,13 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                       ),
                       Row(
                         children: [
-                          DropdownButton<String>(
-                            value: dropdownValue,
-                            icon: Icon(Icons.arrow_downward),
-                            iconSize: 12,
-                            elevation: 16,
-                            style: TextStyle(color: Colors.deepPurple),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.deepPurpleAccent,
-                            ),
-                            onChanged: (String newValue) {
-                              setState(() {
-                                dropdownValue = newValue;
-                              });
-                            },
-                            items: <String>['Portfolios', 'Two', 'Free', 'Four']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
+                          Text(
+                            _portfolioSelected,
+                            style: TextStyle(
+                                fontFamily: "Arvo",
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blueGrey,
+                                fontSize: 20.0),
                           )
                         ],
                       )
@@ -144,4 +145,124 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
       ),
     );
   }
+
+  Widget _buildDrawerBack() {
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              colors: [Color.fromARGB(255, 203, 236, 241), Colors.white],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter
+          )
+      ),
+    );
+  }
+
+  Widget _buildPortfolioDrawer() {
+    return Drawer(
+      child: Stack(
+        children: <Widget>[
+          _buildDrawerBack(),
+          ListView(
+            padding: EdgeInsets.only(left: 32.0, top: 16.0),
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(bottom: 8.0),
+                padding: EdgeInsets.fromLTRB(0.0, 16.0, 16.0, 8.0),
+                height: 170.0,
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: 8.0,
+                      left: 0.0,
+                      child: Text(
+                        "Fundos &\nPortfolios",
+                        style: TextStyle(
+                            fontSize: 27.0, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Positioned(
+                        left: 0.0,
+                        bottom: 0.0,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "Selecione na lista abaixo >",
+                              style: TextStyle(
+                                  color: Colors.deepPurple,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        )
+                    )
+                  ],
+                ),
+              ),
+              Divider(),
+              FutureBuilder<QuerySnapshot>(
+                future: Firestore.instance
+                    .collection("AccountOwner")
+                    .getDocuments(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData)
+                    return Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                      ),
+                    );
+                  return ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.documents.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      accountOwner = AccountOwner.fromDocument(
+                          snapshot.data.documents[index]);
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              Navigator.of(context).pop();
+                              accountOwner = AccountOwner.fromDocument(
+                                  snapshot.data.documents[index]);
+                              _portfolioSelected = accountOwner.portfolioAlias;
+                            });
+                          },
+                          child: Container(
+                            height: 60.0,
+                            child: Row(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.arrow_right,
+                                  size: 32.0,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(
+                                  width: 32.0,
+                                ),
+                                Text(
+                                  _text = (accountOwner.portfolioAlias == "")
+                                      ? accountOwner.accountOwnerAlias
+                                      : accountOwner.portfolioAlias,
+                                  style: TextStyle(
+                                      fontSize: 16.0, color: Colors.black),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
 }
