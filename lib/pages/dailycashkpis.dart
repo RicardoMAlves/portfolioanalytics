@@ -11,12 +11,15 @@ class DailyCashKpis extends StatefulWidget {
 }
 
 class _DailyCashKpisState extends State<DailyCashKpis> {
-
   AccountOwner accountOwner;
 
   DateTime _dateTime = DateTime.now();
+  DateTime _startDate = DateTime.now().subtract(Duration(days: DateTime.now().day-1));
+  DateTime _endDate = DateTime.now();
+
   int _firstMonthDay = 1;
-  String _portfolioSelected = "Todos os FIDCs";
+
+  String _portfolioSelected = "All FIDCs";
   // ignore: unused_field
   String _text;
 
@@ -29,6 +32,8 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
       if (_picked != null && _picked.length == 2) {
         _firstMonthDay = _picked[0].day;
         _dateTime = _picked[1];
+        _startDate = _picked[0];
+        _endDate = _picked[1];
       }
     });
   }
@@ -43,7 +48,7 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
           onPressed: () {},
         ),
         title: Text(
-          "Portfolio Analytics",
+          "Daily Cash Analytics",
           textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: "Arvo",
@@ -59,7 +64,7 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
             Divider(),
             _buildDateRangeAnalysed(context),
             Divider(),
-            BuildProfitability(),
+            BuildProfitability(_startDate, _endDate),
           ],
         ),
       ),
@@ -107,32 +112,46 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        children: [Text("")],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("")
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 50.0),
+                              child: Text(
+                                "Date Range: ${_firstMonthDay.toString()} à ${_dateTime.day.toString()}/${_utilDate.monthReduceExtension(_dateTime.month - 1)}",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontFamily: "Arvo",
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueGrey,
+                                    fontSize: 20.0),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Período: ${_firstMonthDay.toString()} à ${_dateTime.day.toString()}/${_utilDate.monthReduceExtension(_dateTime.month - 1)}",
-                            style: TextStyle(
-                                fontFamily: "Arvo",
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blueGrey,
-                                fontSize: 20.0),
-                          )
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            _portfolioSelected,
-                            style: TextStyle(
-                                fontFamily: "Arvo",
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blueGrey,
-                                fontSize: 20.0),
-                          )
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 60),
+                              child: Text(
+                                _portfolioSelected,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontFamily: "Arvo",
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueGrey,
+                                    fontSize: 20.0),
+                              ),
+                            ),
+                          ),
                         ],
                       )
                     ],
@@ -152,9 +171,7 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
           gradient: LinearGradient(
               colors: [Color.fromARGB(255, 203, 236, 241), Colors.white],
               begin: Alignment.topCenter,
-              end: Alignment.bottomCenter
-          )
-      ),
+              end: Alignment.bottomCenter)),
     );
   }
 
@@ -176,7 +193,7 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                       top: 8.0,
                       left: 0.0,
                       child: Text(
-                        "Fundos &\nPortfolios",
+                        "FIDCs &\nPortfolios",
                         style: TextStyle(
                             fontSize: 27.0, fontWeight: FontWeight.bold),
                       ),
@@ -188,15 +205,14 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              "Selecione na lista abaixo >",
+                              "Please select one of them >",
                               style: TextStyle(
                                   color: Colors.deepPurple,
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
-                        )
-                    )
+                        ))
                   ],
                 ),
               ),
@@ -227,7 +243,10 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                               Navigator.of(context).pop();
                               accountOwner = AccountOwner.fromDocument(
                                   snapshot.data.documents[index]);
-                              _portfolioSelected = accountOwner.portfolioAlias;
+                              _portfolioSelected =
+                                  (accountOwner.portfolioAlias == "")
+                                      ? accountOwner.accountOwnerAlias
+                                      : accountOwner.portfolioAlias;
                             });
                           },
                           child: Container(
@@ -264,5 +283,4 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
       ),
     );
   }
-
 }

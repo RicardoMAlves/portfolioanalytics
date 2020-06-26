@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:portfolioanalytics/pages/dailycashkpis.dart';
+import 'package:portfolioanalytics/testdb/cruddailycash.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,9 +15,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-    initialRoute: "/dailyCashKpis",
+      //initialRoute: "/dailyCashKpis",
+      initialRoute: "/crudTest",
     routes: <String, WidgetBuilder>{
       "/dailyCashKpis": (BuildContext context) => DailyCashKpis(),
+      "/crudTest": (BuildContext context) => CRUDDailyCash(),
     },
     );
   }
