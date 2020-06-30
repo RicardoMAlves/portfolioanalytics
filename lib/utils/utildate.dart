@@ -46,4 +46,8 @@ class UtilDate {
     return int.parse(_date.year.toString() + _month);
   }
 
+  DateTime changeTime(DateTime dateTime, int hours, int minutes, int seconds, int milliseconds) {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day, hours, minutes, seconds, milliseconds);
+  }
+
 }

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:portfolioanalytics/utils/utildate.dart';
 
 class BuildProfitability extends StatefulWidget {
@@ -18,13 +19,15 @@ class _BuildProfitabilityState extends State<BuildProfitability> {
   UtilDate _utilDate = new UtilDate();
 
   int _refDate;
-  double _cash = 0.0;
-  double _goal = 0.0;
+  double _cash;
+  double _goal;
 
   @override
   Widget build(BuildContext context) {
 
     _refDate = _utilDate.convertDateTimeToRefDate(widget._endDate);
+    _cash = 0.0;
+    _goal = 0.0;
 
     return StreamBuilder<QuerySnapshot>(
       stream: fetchDailyCash(),
@@ -120,12 +123,16 @@ class _BuildProfitabilityState extends State<BuildProfitability> {
   }
 
   Stream<QuerySnapshot> fetchDailyCash() {
+
+    DateTime _startDate = _utilDate.changeTime(widget._startDate, 0, 0, 0, 0);
+    DateTime _endDate = _utilDate.changeTime(widget._endDate, 0, 0, 0, 0);
+
     return Firestore.instance
-      .collection("DailyCash")
-      .document(_refDate.toString())
-      .collection("DailyCashByDay")
-      .where("DailyCashDate", isGreaterThanOrEqualTo: widget._startDate, isLessThanOrEqualTo: widget._endDate)
-      .snapshots();
+        .collection("DailyCash")
+        .document(_refDate.toString())
+        .collection("DailyCashByDay")
+        .where("DailyCashDate", isGreaterThanOrEqualTo: _startDate, isLessThanOrEqualTo: _endDate)
+        .snapshots();
   }
 
 }

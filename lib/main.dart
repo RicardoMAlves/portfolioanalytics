@@ -15,8 +15,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      //initialRoute: "/dailyCashKpis",
-      initialRoute: "/crudTest",
+      initialRoute: "/dailyCashKpis",
+      //initialRoute: "/crudTest",
     routes: <String, WidgetBuilder>{
       "/dailyCashKpis": (BuildContext context) => DailyCashKpis(),
       "/crudTest": (BuildContext context) => CRUDDailyCash(),
