@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRangePicker;
 import 'package:portfolioanalytics/utils/utildate.dart';
 import 'package:portfolioanalytics/models/accountowner.dart';
+import 'package:portfolioanalytics/widgets/buildchartdailycash.dart';
 import 'package:portfolioanalytics/widgets/buildprofitability.dart';
 
 class DailyCashKpis extends StatefulWidget {
@@ -58,14 +59,18 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Divider(),
-            _buildDateRangeAnalysed(context),
-            Divider(),
-            BuildProfitability(_startDate, _endDate),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Divider(),
+              _buildDateRangeAnalysed(context),
+              Divider(),
+              BuildProfitability(_startDate, _endDate, _portfolioSelected),
+              Divider(),
+              BuildChartDailyCash(_startDate, _endDate, _portfolioSelected),
+            ],
+          ),
         ),
       ),
       endDrawer: _buildPortfolioDrawer(),
@@ -90,7 +95,8 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                       IconButton(
                         icon: Icon(
                           Icons.date_range,
-                          size: 55.0,
+                          size: 40.0,
+                          color: Colors.orangeAccent,
                         ),
                         onPressed: () async {
                           _picked = await DateRangePicker.showDatePicker(
@@ -111,49 +117,28 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [Text("")],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Column(
                         children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 50.0),
-                              child: Text(
-                                "Date Range: ${_firstMonthDay.toString()} à ${_dateTime.day.toString()}/${_utilDate.monthReduceExtension(_dateTime.month - 1)}",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: "Arvo",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blueGrey,
-                                    fontSize: 20.0),
+                          SafeArea(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "$_portfolioSelected,\nCollections results from ${_firstMonthDay.toString()} to ${_dateTime.day.toString()}/${_utilDate.monthReduceExtension(_dateTime.month - 1)}",
+                                    style: TextStyle(
+                                        fontFamily: "Arvo",
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blueGrey,
+                                        fontSize: 15.0),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
+                          )
                         ],
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 60),
-                              child: Text(
-                                _portfolioSelected,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: "Arvo",
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blueGrey,
-                                    fontSize: 20.0),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
                     ],
                   )
                 ],
