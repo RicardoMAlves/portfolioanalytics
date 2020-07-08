@@ -59,7 +59,7 @@ class _LoginState extends State<Login> {
                 color: Colors.white, fontWeight: FontWeight.bold)),
         onPressed: () {
           if (_formKey.currentState.validate()) {
-            Navigator.pushNamed(context, "/dailyCashKpis");
+            Navigator.pushNamed(context, "/homepage");
           }
         },
       ),
@@ -112,7 +112,7 @@ class _LoginState extends State<Login> {
                       SizedBox(
                         height: 140.0,
                         child: Image.asset(
-                          "images/logo_viability2.jpg",
+                          "images/logo_viability3.png",
                           fit: BoxFit.contain,
                         ),
                       ),

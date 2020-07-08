@@ -60,7 +60,7 @@ class BuildChartDailyCash extends StatelessWidget {
           ];
           return Container(
             width: 600.0,
-            height: 400.0,
+            height: 280.0,
             padding: EdgeInsets.all(20),
             child: Card(
               child: Padding(

@@ -4,6 +4,7 @@ import 'package:date_range_picker/date_range_picker.dart' as DateRangePicker;
 import 'package:portfolioanalytics/utils/utildate.dart';
 import 'package:portfolioanalytics/models/accountowner.dart';
 import 'package:portfolioanalytics/widgets/buildchartdailycash.dart';
+import 'package:portfolioanalytics/widgets/buildforecast.dart';
 import 'package:portfolioanalytics/widgets/buildprofitability.dart';
 
 class DailyCashKpis extends StatefulWidget {
@@ -46,10 +47,10 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () { Navigator.of(context).pop(); },
         ),
         title: Text(
-          "Daily Cash Analytics",
+          "Daily Cash Analysis",
           textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: "Arvo",
@@ -69,6 +70,8 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
               BuildProfitability(_startDate, _endDate, _portfolioSelected),
               Divider(),
               BuildChartDailyCash(_startDate, _endDate, _portfolioSelected),
+              Divider(),
+              BuildForecast(),
             ],
           ),
         ),

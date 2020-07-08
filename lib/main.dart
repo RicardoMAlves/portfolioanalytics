@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:portfolioanalytics/pages/dailycashkpis.dart';
+import 'package:portfolioanalytics/pages/homepage.dart';
+import 'package:portfolioanalytics/pages/lifetimekpis.dart';
 import 'package:portfolioanalytics/pages/login.dart';
 import 'package:portfolioanalytics/pages/signup.dart';
 import 'package:portfolioanalytics/testdb/cruddailycash.dart';
@@ -35,14 +37,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: colorCustom,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      //initialRoute: "/signup",
       initialRoute: "/login",
-      //initialRoute: "/dailyCashKpis",
-      //initialRoute: "/crudTest",
       routes: <String, WidgetBuilder>{
         "/login": (BuildContext context) => Login(),
         "/signup": (BuildContext context) => SignUp(),
+        "/homepage": (BuildContext context) => HomePage(),
         "/dailyCashKpis": (BuildContext context) => DailyCashKpis(),
+        "/lifetimeKpis": (BuildContext context) => LifeTimeKpis(),
         "/crudTest": (BuildContext context) => CRUDDailyCash(),
       },
     );

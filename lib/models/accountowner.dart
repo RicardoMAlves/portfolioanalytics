@@ -7,6 +7,7 @@ class AccountOwner {
   int accountOwnerID;
   String portfolioAlias;
   int portfolioID;
+  double originalFaceValue;
 
   AccountOwner.fromDocument(DocumentSnapshot snapshot) {
     documentID = snapshot.documentID;
@@ -14,6 +15,7 @@ class AccountOwner {
     accountOwnerID = snapshot.data["AccountOwnerID"];
     portfolioAlias = snapshot.data["PortfolioAlias"];
     portfolioID = snapshot.data["PortfolioID"];
+    originalFaceValue = double.parse(snapshot.data["OriginalFaceValue"].toString());
   }
 
 }

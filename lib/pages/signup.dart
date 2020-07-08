@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class SignUp extends StatelessWidget {
 
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
