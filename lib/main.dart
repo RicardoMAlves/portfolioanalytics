@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:portfolioanalytics/models/multilanguage.dart';
 import 'package:portfolioanalytics/pages/dailycashkpis.dart';
 import 'package:portfolioanalytics/pages/homepage.dart';
 import 'package:portfolioanalytics/pages/lifetimekpis.dart';
@@ -12,6 +13,8 @@ void main() {
 
 // ignore: must_be_immutable
 class MyApp extends StatelessWidget {
+
+  MultiLanguage _multiLanguage = MultiLanguage();
 
   Map<int, Color> color = {
     50:Color.fromRGBO(136,14,79, .1),
@@ -32,12 +35,12 @@ class MyApp extends StatelessWidget {
     MaterialColor colorCustom = MaterialColor(0xff01A0C7, color);
 
     return MaterialApp(
-      title: 'Portfolio Analytics - Demo',
+      title: _multiLanguage.getLabelText("Main", "Title"),
       theme: ThemeData(
         primarySwatch: colorCustom,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: "/login",
+      initialRoute: "/dailyCashKpis",
       routes: <String, WidgetBuilder>{
         "/login": (BuildContext context) => Login(),
         "/signup": (BuildContext context) => SignUp(),

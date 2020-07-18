@@ -4,9 +4,9 @@ class CustomItemDrawerTile extends StatelessWidget {
 
   final int _typeItemDrawer;
 
-  final List<String> _itemDrawer = ["Daily Cash", "FIDC Life Time", "About"];
+  final List<String> _itemDrawer = ["Daily Cash", "FIDC Life Time", "Settings", "About"];
 
-  final List<IconData> _itemIconDataDrawer = [Icons.attach_money, Icons.date_range, Icons.list];
+  final List<IconData> _itemIconDataDrawer = [Icons.attach_money, Icons.date_range, Icons.apps, Icons.list];
 
   CustomItemDrawerTile(this._typeItemDrawer);
 

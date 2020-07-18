@@ -3,8 +3,8 @@ import 'package:charts_flutter/flutter.dart' as charts;
 
 class DaysOfMonth {
 
-  final int dayOfMonth;
-  final double amountResult;
+  final String dayOfMonth;
+  final int amountResult;
   final charts.Color barColor;
 
 
