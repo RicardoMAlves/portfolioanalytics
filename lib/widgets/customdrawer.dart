@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:portfolioanalytics/models/users.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'customitemdrawertile.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -24,40 +26,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
               end: Alignment.bottomCenter)),
     );
 
-    final _textHeader = Container(
-      margin: EdgeInsets.only(bottom: 8.0),
-      padding: EdgeInsets.fromLTRB(0.0, 16.0, 16.0, 8.0),
-      height: 170.0,
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-            top: 8.0,
-            left: 0.0,
-            child: Text(
-              widget._textHeaderDrawer,
-              style: TextStyle(
-                  fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Positioned(
-              left: 0.0,
-              bottom: 0.0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Hello, Ricardo. Please select one of them >",
-                    style: TextStyle(
-                        color: Colors.deepPurple,
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ))
-        ],
-      ),
-    );
-
     return Drawer(
       child: Stack(
         children: [
@@ -65,7 +33,44 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ListView(
             padding: EdgeInsets.only(left: 32.0, top: 16.0),
             children: [
-              _textHeader,
+              Container(
+                margin: EdgeInsets.only(bottom: 8.0),
+                padding: EdgeInsets.fromLTRB(0.0, 16.0, 16.0, 8.0),
+                height: 170.0,
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: 8.0,
+                      left: 0.0,
+                      child: Text(
+                        widget._textHeaderDrawer,
+                        style: TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    ScopedModelDescendant<Users>(
+                      builder: (context, child, model) {
+                        return Positioned(
+                            left: 0.0,
+                            bottom: 0.0,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  "Hello, ${!model.isLoggedIn() ? "" : model.userData["name"]}. Please select one of them >",
+                                  style: TextStyle(
+                                      color: Colors.deepPurple,
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            )
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
               Divider(),
               CustomItemDrawerTile(widget._typeItemDrawer),
             ],

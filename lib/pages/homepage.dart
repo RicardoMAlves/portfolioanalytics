@@ -167,14 +167,14 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   children: [
                     Text(
-                      labelTextBuy + _decimalFormat.format(currencyBuy),
+                      labelTextBuy + " " + _decimalFormat.format(currencyBuy),
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 13.0,
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      labelTextSell + _decimalFormat.format(currencySell),
+                      labelTextSell + " " + _decimalFormat.format(currencySell),
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 13.0,

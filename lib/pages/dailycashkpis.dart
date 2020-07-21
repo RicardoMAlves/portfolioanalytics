@@ -14,6 +14,7 @@ class DailyCashKpis extends StatefulWidget {
 }
 
 class _DailyCashKpisState extends State<DailyCashKpis> {
+
   AccountOwner accountOwner;
   DailyCash dailyCash;
 
@@ -39,12 +40,13 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
 
   List<DateTime> _picked = new List<DateTime>();
 
-  final List<DaysOfMonth> _listDaysOfMonth = [];
+  List<DaysOfMonth> _listDaysOfMonth = [];
 
   var _decimalFormat = NumberFormat("###,##0.00", "pt-br");
   var _percentFormat = NumberFormat("#,##0.00", "pt-br");
 
   Stream<QuerySnapshot> _streamDailyCash;
+  Stream<QuerySnapshot> _streamPortfolios;
 
   void _setDateRangeSelected() {
     setState(() {
@@ -53,7 +55,6 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
         _dateTime = _picked[1];
         _startDate = _picked[0];
         _endDate = _picked[1];
-        _listDaysOfMonth.clear();
         this._streamDailyCash = this._fetchDailyCash();
       }
     });
@@ -63,6 +64,7 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
   void initState() {
     super.initState();
     this._streamDailyCash = this._fetchDailyCash();
+    this._streamPortfolios = this._fetchPortfolios();
   }
 
   @override
@@ -233,10 +235,8 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                 ),
               ),
               Divider(),
-              FutureBuilder<QuerySnapshot>(
-                future: Firestore.instance
-                    .collection("AccountOwner")
-                    .getDocuments(),
+              StreamBuilder<QuerySnapshot>(
+                stream: _streamPortfolios,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return Center(
@@ -264,6 +264,7 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
                                       ? accountOwner.accountOwnerAlias
                                       : accountOwner.portfolioAlias;
                               _businessUnitType = accountOwner.businessUnitType;
+                              this._streamDailyCash = this._fetchDailyCash();
                             });
                           },
                           child: Container(
@@ -314,10 +315,6 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
           dailyCash = DailyCash.fromDocument(element);
           _cash += dailyCash.collectionAmount;
           _goal += dailyCash.goal;
-          _listDaysOfMonth.add(DaysOfMonth(
-              dayOfMonth: dailyCash.dailyCashDate.day.toString(),
-              amountResult: dailyCash.collectionAmount.round(),
-              barColor: charts.ColorUtil.fromDartColor(Colors.blue)));
         });
         if (_cash != 0.0 || _goal != 0.0) _percent = ((_cash / _goal) * 100);
         return Center(
@@ -393,67 +390,90 @@ class _DailyCashKpisState extends State<DailyCashKpis> {
 
   Widget _buildChartDailyCash() {
 
-    final List<charts.Series<DaysOfMonth, String>> series = [
-      new charts.Series(
-        id: "Daily Cash",
-        colorFn: (DaysOfMonth series, _) => series.barColor,
-        domainFn: (DaysOfMonth series, _) => series.dayOfMonth.toString(),
-        measureFn: (DaysOfMonth series, _) => series.amountResult,
-        data: _listDaysOfMonth,)
-    ];
-
-    return Container(
-      //width: 600.0,
-      height: 400.0,
-      padding: EdgeInsets.all(20),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Text(
-                "$_monthSelected",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18.0,
-                    fontFamily: "Arvo",
-                    fontWeight: FontWeight.bold),
+    return StreamBuilder<QuerySnapshot>(
+      stream: _streamDailyCash,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return Text("Ops! Error ${snapshot.error}");
+        if (!snapshot.hasData)
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+            ),
+          );
+        _listDaysOfMonth.clear();
+        snapshot.data.documents.forEach((element) {
+          dailyCash = DailyCash.fromDocument(element);
+          _listDaysOfMonth.add(DaysOfMonth(
+              dayOfMonth: dailyCash.dailyCashDate.day.toString(),
+              amountResult: dailyCash.collectionAmount.round(),
+              barColor: charts.ColorUtil.fromDartColor(Colors.blue)));
+        });
+        final List<charts.Series<DaysOfMonth, String>> series = [charts.Series(
+          id: "Daily Cash",
+          colorFn: (DaysOfMonth series, _) => series.barColor,
+          domainFn: (DaysOfMonth series, _) => series.dayOfMonth.toString(),
+          measureFn: (DaysOfMonth series, _) => series.amountResult,
+          data: _listDaysOfMonth,)];
+        return Container(
+          //width: 600.0,
+          height: 400.0,
+          padding: EdgeInsets.all(20),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text(
+                    "$_monthSelected",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        fontFamily: "Arvo",
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(
+                    child: new charts.BarChart(series, animate: true),
+                  )
+                ],
               ),
-              Expanded(
-                child: new charts.BarChart(series, animate: true),
-              )
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Stream<QuerySnapshot> _fetchDailyCash() {
 
-    DateTime _startDate = _utilDate.changeTime(this._startDate, 0, 0, 0, 0);
-    DateTime _endDate = _utilDate.changeTime(this._endDate, 0, 0, 0, 0);
+    DateTime _startDateSearch = _utilDate.changeTime(this._startDate, 0, 0, 0, 0);
+    DateTime _endDateSearch = _utilDate.changeTime(this._endDate, 0, 0, 0, 0);
 
     if (this._portfolioSelected == "All FIDCs")
       return Firestore.instance
           .collection("DailyCash")
           .where("DailyCashDate",
-              isGreaterThanOrEqualTo: _startDate, isLessThanOrEqualTo: _endDate)
+              isGreaterThanOrEqualTo: _startDateSearch, isLessThanOrEqualTo: _endDateSearch)
           .snapshots();
 
     if (this._businessUnitType == 1) // 1 = Fundos e 2 = Portfolios
       return Firestore.instance
           .collection("DailyCash")
           .where("DailyCashDate",
-              isGreaterThanOrEqualTo: _startDate, isLessThanOrEqualTo: _endDate)
+              isGreaterThanOrEqualTo: _startDateSearch, isLessThanOrEqualTo: _endDateSearch)
           .where("AccountOwnerAlias", isEqualTo: this._portfolioSelected)
           .snapshots();
 
     return Firestore.instance
         .collection("DailyCash")
         .where("DailyCashDate",
-            isGreaterThanOrEqualTo: _startDate, isLessThanOrEqualTo: _endDate)
+            isGreaterThanOrEqualTo: _startDateSearch, isLessThanOrEqualTo: _endDateSearch)
         .where("PortfolioAlias", isEqualTo: this._portfolioSelected)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> _fetchPortfolios() {
+    return Firestore.instance
+        .collection("AccountOwner")
         .snapshots();
   }
 

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:portfolioanalytics/models/multilanguage.dart';
+import 'package:portfolioanalytics/models/users.dart';
 import 'package:portfolioanalytics/pages/dailycashkpis.dart';
 import 'package:portfolioanalytics/pages/homepage.dart';
 import 'package:portfolioanalytics/pages/lifetimekpis.dart';
 import 'package:portfolioanalytics/pages/login.dart';
 import 'package:portfolioanalytics/pages/signup.dart';
 import 'package:portfolioanalytics/testdb/cruddailycash.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,21 +36,24 @@ class MyApp extends StatelessWidget {
 
     MaterialColor colorCustom = MaterialColor(0xff01A0C7, color);
 
-    return MaterialApp(
-      title: _multiLanguage.getLabelText("Main", "Title"),
-      theme: ThemeData(
-        primarySwatch: colorCustom,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return ScopedModel<Users>(
+      model: Users(),
+      child: MaterialApp(
+        title: _multiLanguage.getLabelText("Main", "Title"),
+        theme: ThemeData(
+          primarySwatch: colorCustom,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        initialRoute: "/login",
+        routes: <String, WidgetBuilder>{
+          "/login": (BuildContext context) => Login(),
+          "/signup": (BuildContext context) => SignUp(),
+          "/homepage": (BuildContext context) => HomePage(),
+          "/dailyCashKpis": (BuildContext context) => DailyCashKpis(),
+          "/lifetimeKpis": (BuildContext context) => LifeTimeKpis(),
+          "/crudTest": (BuildContext context) => CRUDDailyCash(),
+        },
       ),
-      initialRoute: "/dailyCashKpis",
-      routes: <String, WidgetBuilder>{
-        "/login": (BuildContext context) => Login(),
-        "/signup": (BuildContext context) => SignUp(),
-        "/homepage": (BuildContext context) => HomePage(),
-        "/dailyCashKpis": (BuildContext context) => DailyCashKpis(),
-        "/lifetimeKpis": (BuildContext context) => LifeTimeKpis(),
-        "/crudTest": (BuildContext context) => CRUDDailyCash(),
-      },
     );
   }
 }
