@@ -117,7 +117,30 @@ class _LoginState extends State<Login> {
                           Align(
                             alignment: Alignment.center,
                             child: FlatButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                if (_emailController.text.isEmpty)
+                                  _scaffoldKey.currentState.showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          "Favor informar o seu email.",
+                                        ),
+                                        backgroundColor: Colors.redAccent,
+                                        duration: Duration(seconds: 3),
+                                      )
+                                  );
+                                else {
+                                  model.recoverPass(_emailController.text);
+                                  _scaffoldKey.currentState.showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          "Confira o seu email.",
+                                        ),
+                                        backgroundColor: Colors.greenAccent,
+                                        duration: Duration(seconds: 3),
+                                      )
+                                  );
+                                }
+                              },
                               child: Text(
                                 _multiLanguage.getLabelText("Login", "AlignForgot"),
                                 textAlign: TextAlign.center,
